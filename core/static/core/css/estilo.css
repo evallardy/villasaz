@@ -1,0 +1,64 @@
+body {
+    font-size: 18px;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: rgb(234, 234, 234);
+    color: black;
+}
+.encabezado {
+    background-color: darkblue;
+    height: 120px;
+    color: white;
+}
+.logo {
+    height: 100px;
+    margin-left: 20px;
+    margin-top: 8px;
+}
+th {
+    text-align: right;
+}
+.menu {
+    color: white;
+    text-decoration: none;
+}
+.menu1 {
+    font-size: 20px;
+    color: black;
+    text-decoration: none;
+}
+ul {
+    list-style-type: none;
+}
+li {
+    display: inline;
+    margin-right: 10px;
+}
+a {
+    text-decoration: none;   
+    font-size: 20px;
+}
+.texto-etiqueta {
+    position: absolute;
+    font-size: 16px;
+    font-weight: bold;
+    fill: white;
+    cursor: pointer;
+}
+.trazo {
+    fill: darkgray;
+    stroke: black;
+    cursor: pointer;
+}
+.modal {
+    font-size: 24px;
+    background: gray;
+    height: 300px;
+    width: 150px;
+    display: none;
+}
+button {
+    font-size: 20px;
+}
+input {
+    font-size: 20px;
+}

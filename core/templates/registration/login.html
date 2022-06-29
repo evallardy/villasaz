@@ -1,0 +1,15 @@
+{% extends "core/index.html" %}
+{% block pantalla %}
+<div class="container">
+    <h2>Ingresa credenciales</h2>
+    <hr>
+    <form action="" method="post" >
+        {% csrf_token %}
+        <table>
+            {{ form.as_table }}
+        </table>
+        <input type="submit" value="Ingresar" class="btn btn-secondary">
+        <button><a href="{% url 'index' %}">Cancelar</a></button>
+    </form>
+</div>
+{% endblock %}

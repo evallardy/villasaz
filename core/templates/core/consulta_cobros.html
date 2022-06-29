@@ -1,0 +1,119 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block contenido %}
+<div class="container" style="margin-left: 100px; margin-top: 50px;">
+<h2 class="mt-2">Cobros</h2>
+<form action="{% url 'consulta_cobros' %}" id="fdato"> {% csrf_token %}
+    <button><a href="{% url 'index' %}">Salir</a></button>
+    <fieldset style="width: 250px; text-align: center;">
+        <legend>Elige tipo de busqueda</legend>
+        <label>
+            <input type="radio" name="buscar" id="lugar" value="lugar" checked
+                onchange="porEdificio()">Por Edificio
+        </label>
+        <label>
+            <input type="radio" name="buscar" id="Fecha" value="Fecha"
+                onchange="porFecha()">Por Fecha
+        </label>
+    </fieldset>
+    <table style="padding: 5px; ">
+        <tr>
+            <td style="padding: 5px;" class="bEdificio">Edificio</td>
+            <td style="padding: 5px;" class="bEdificio">Departamento</td>
+            <td style="padding: 5px;" class="bEdificio">Servicio</td>
+            <td style="padding: 5px;" class="bFecha">Desde</td>
+            <td style="padding: 5px;" class="bFecha">Hasta</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="bEdificio">
+                <select name="edificio" id="edificio" class="form-control" style="font-size: 20px;" required>
+                    <option value="00">Todos</option>
+                    {% for e in edificios %}
+                    <option value="{{ e.numero }}">{{ e.numero }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td class="bEdificio">
+                <select name="depto" id="depto" class="form-control" style="font-size: 20px;" required>
+                    <option value="000">Todos</option>
+                    {% for d in deptos %}
+                    <option value="{{ d }}">{{ d }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td class="bEdificio">
+                <select name="servicio" id="servicio" class="form-control" style="font-size: 20px;" required>
+                    <option value="Todos">Todos</option>
+                    {% for s in servicios %}
+                    <option value="{{ s.descripcion }}">{{ s.descripcion }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td class="bFecha">
+                <input type="date" name="fechaDesde" id="fechaDesde">
+            </td>
+            <td class="bFecha">
+                <input type="date" name="fechaHasta" id="fechaHasta">
+            </td>
+            <td>
+                <input type="submit" value="Actualizar">
+            </td>
+        </tr>
+    </table>
+    <div class="container" style="width: 560px; height: 350px; overflow: auto; position: absolute;
+         margin-top: 30px; margin-left: 20px; border-color: darkgray; border-style: solid; border-width: 1px;">
+        <table style="width: 550px; max-height: 500px;">
+            <thead>
+                <tr>
+                    <th style="text-align: center;">Edificio</th>
+                    <th style="text-align: center;">Departamento</th>
+                    <th style="text-align: center;">Servicio</th>
+                    <th style="text-align: center;">Recibos</th>
+                    <th style="text-align: center;">importe</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in object_list %}
+                <tr>
+                    <td style="text-align: center;">{{ p.edificio }}</td>
+                    <td style="text-align: center;">{{ p.depto }}</td>
+                    <td style="text-align: left;">{{ p.concepto }}</td>
+                    <td style="text-align: center;">{{ p.dcount }}</td>
+                    <td style="text-align: center;">{{ p.dimporte }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</form>
+</div>
+<script>
+    $("#fdato").hide();
+    $(document).ready(function () {
+        $("#fdato").hide();
+        $("#edificio").val('{{ edificio }}').change();
+        $("#depto").val('{{ depto }}').change();
+        $("#servicio").val('{{ servicio }}').change();
+        fDesde = '{{ fechaDesde }}';
+        fHasta = '{{ FechaHasta }}';
+        $("#fechaDesde").val(fDesde);
+        $("#fechaHasta").val(fHasta);
+        $(".bFecha").hide();
+        $("#{{buscar}}").prop("checked", true).change();
+        $("#fdato").show();
+    });
+    function porEdificio() {
+        $("#fdato").hide();
+        $(".bEdificio").show();
+        $(".bFecha").hide();
+        $("#fdato").show();
+    }
+    function porFecha() {
+        $("#fdato").hide();
+        $(".bEdificio").hide();
+        $(".bFecha").show();
+        $("#fdato").show();
+    }
+</script>
+{% endblock %}

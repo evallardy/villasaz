@@ -1,0 +1,48 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block contenido %}
+<div class="container" style="margin-left: 100px; margin-top: 50px;">
+<h2 class="mt-2">Estado de cuenta</h2>
+<h3>Edificio {{ edificio }} departamento {{ depto }}  {{ nomServicio }} </h3>
+<form action="{% url 'pagar' %}"> {% csrf_token %}
+    <input type="submit" value="Pagar">
+    <button><a href="{% url 'index' %}">Salir</a> </button>
+    <input type="text" name="edificio" id="edificio" value="{{ edificio }}" hidden> 
+    <input type="text" name="depto" id="depto" value="{{ depto }}" hidden>
+    <input type="text" name="servicio" id="servicio" value="{{ servicio }}" hidden>
+    <div class="container" style="width: 400px; height: 350px; overflow: auto; position: absolute;
+         margin-top: 30px; margin-left: 20px; border-color: darkgray; border-style: solid; border-width: 1px;">
+        <table style="width: 350px; height: 500px; overflow: auto;">
+            <thead>
+                <tr>
+                    <th style="text-align: center;"></th>
+                    <th style="text-align: center;">Año</th>
+                    <th style="text-align: center;">Mes</th>
+                    <th style="text-align: center;">Estatus</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in object_list %}
+                <tr>
+                    <td style="text-align: center;">
+                        {% if not p.recibo %}
+                        <input type="checkbox" name="cb-{{ p.anio }}-{{ p.mes }}" id="cb-{{ p.anio }}-{{ p.mes }}">
+                        {% endif %}
+                    </td>
+                    <td style="text-align: center;">{{ p.anio }}</td>
+                    <td style="text-align: center;">{{ p.mes }}</td>
+                    <td style="font-size: 20px; text-align: center;">
+                        {% if p.recibo %}
+                        Pagado
+                        {% else %}
+                        Pendiente
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</form>
+</div>
+{% endblock %}

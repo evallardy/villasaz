@@ -1,0 +1,64 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block contenido %}
+<div class="container" style="margin-left: 100px; margin-top: 50px;">
+    <h2 class="mt-2">Pago del edificio {{ edificio }} departamento {{ depto }} </h2>
+    <h3>{{ nomServicio }}, pago por mes {{ importe }}</h3>
+    <form action="{% url 'guardaPagos' %}" id="forma"> {% csrf_token %}
+        <input type="text" name="servicio" id="servicio" value="{{ servicio }}" hidden>
+        <input type="text" name="edificio" id="edificio" value="{{ edificio }}" hidden>
+        <input type="text" name="depto" id="depto" value="{{ depto }}" hidden>
+        <input type="" name="pagos" id="pagos" value="{{ Pagos }}" hidden>
+        {% if total > 0 %}
+        <table>
+            <tr>
+                <td style="text-align: right;">Se registra con el recibo : </td>
+                <td><input type="text" name="recibo" id="recibo" style="width: 80px; text-align: right;" required></td>
+            </tr>
+            <tr>
+                <td style="text-align: right;">Se recibe de : </td>
+                <td><input type="text" name="recibimosDe" id="recibimosDe" style="width: 300px;" required></td>
+            </tr>
+        </table>
+        <hr>
+        <input type="submit" value="Guardar pago">
+        {% endif %}
+        <button style="margin-left: 20px;"><a href="{% url 'index' %}">Cancelar pago</a> </button>
+        <hr>
+        <table style="padding: 15px;">
+            <tr>
+                <td style="text-align: right;">Total de pagos : </td>
+                <td style="text-align: right;">{{ totalPagos }}</td>
+            </tr>
+            <tr>
+                <td style="text-align: right;">Total a pagar : </td>
+                <td style="text-align: right;">{{ total }}</td>
+            </tr>
+            <tr hidden>
+                <td style="text-align: right;">Total de operación : </td>
+                <td><input type="text" name="importe" id="importe" style="width: 80px; text-align: right;"
+                        value="{{ total }}" required></td>
+            </tr>
+            <tr hidden>
+                <td style="text-align: right;">Total de operación : </td>
+                <td><input type="text" name="nomServicio" id="nomServicio" style="width: 80px; text-align: right;"
+                        value="{{ nomServicio }}" required></td>
+            </tr>
+            <tr hidden>
+                <td style="text-align: right;">paso : </td>
+                <td><input type="text" name="paso" id="paso" style="width: 80px; text-align: right;"
+                        value="{{ user.id }}" required></td>
+            </tr>
+        </table>
+        <label style="padding: 20px;">Pagos : </label>
+        <div class="container" style="width: 300px; height: 350px; overflow: auto; position: absolute;
+         margin-top: 5px; margin-left: 20px; border-color: darkgray; border-style: solid; border-width: 1px;">
+            {% for pp in Pagos %}
+            <p style="margin-left: 20px; line-height: 8px;">
+                Año {{ pp.anio }} Mes {{ pp.mes }}
+            </p>
+            {% endfor %}
+        </div>
+    </form>
+</div>
+{% endblock %}
