@@ -3,6 +3,7 @@ import datetime
 from datetime import date
 from traceback import print_tb
 from django.shortcuts import redirect, render
+from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView
 from core.funciones import f_anio_mes_str, llena_mantenimiento 
 from core.models import D_DEPTO, Edificio, Matto, Recibo, Servicio
@@ -160,6 +161,9 @@ class consulta_deudas(ListView):
         if servicio > "0":
             queryset = queryset.filter(servicio_id=servicio)
         return queryset
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        return self.reverse_lazy(self.get_context_data(form=form))
 
 class consulta_cobros(ListView):
     template_name = 'core/consulta_cobros.html'
@@ -237,3 +241,6 @@ class consulta_cobros(ListView):
             queryset = Recibo.objects.filter(fecha_pago__range=[fechaDesde, FechaHasta]).values('edificio','depto','concepto') \
                 .annotate(dcount=Count('edificio'),dimporte=Sum('importe')).order_by('edificio','depto','concepto') 
         return queryset
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        return self.reverse_lazy(self.get_context_data(form=form))

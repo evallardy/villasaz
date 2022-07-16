@@ -3,7 +3,8 @@
 {% block contenido %}
 <div class="container" style="margin-left: 100px; margin-top: 50px;">
 <h2 class="mt-2">Cobros</h2>
-<form action="{% url 'consulta_cobros' %}" id="fdato"> {% csrf_token %}
+<form action="{% url 'consulta_cobros' %}"> 
+    {% csrf_token %}
     <button><a href="{% url 'index' %}">Salir</a></button>
     <fieldset style="width: 250px; text-align: center;">
         <legend>Elige tipo de busqueda</legend>
@@ -88,23 +89,9 @@
     </div>
 </form>
 </div>
+{% block bljs %}
 <script>
-    $("#fdato").hide();
-    $(document).ready(function () {
-        $("#fdato").hide();
-        $("#edificio").val('{{ edificio }}').change();
-        $("#depto").val('{{ depto }}').change();
-        $("#servicio").val('{{ servicio }}').change();
-        fDesde = '{{ fechaDesde }}';
-        fHasta = '{{ FechaHasta }}';
-        $("#fechaDesde").val(fDesde);
-        $("#fechaHasta").val(fHasta);
-        $(".bFecha").hide();
-        $("#{{buscar}}").prop("checked", true).change();
-        $("#fdato").show();
-    });
     function porEdificio() {
-        $("#fdato").hide();
         $(".bEdificio").show();
         $(".bFecha").hide();
         $("#fdato").show();
@@ -115,5 +102,17 @@
         $(".bFecha").show();
         $("#fdato").show();
     }
+    $(document).ready(function () {
+        fDesde = '{{ fechaDesde }}';
+        fHasta = '{{ FechaHasta }}';
+        $("#edificio").val('{{ edificio }}').change();
+        $("#depto").val('{{ depto }}').change();
+        $("#servicio").val('{{ servicio }}').change();
+        $("#fechaDesde").val(fDesde);
+        $("#fechaHasta").val(fHasta);
+        $(".bFecha").hide();
+        $("#{{buscar}}").prop("checked", true).change();
+    });
 </script>
+{% endblock %}
 {% endblock %}
