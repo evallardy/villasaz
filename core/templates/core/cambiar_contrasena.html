@@ -1,0 +1,46 @@
+{% extends "core/base.html" %}
+{% load crispy_forms_tags %}
+{% block contenido %}
+{% block blcss %}
+
+{% endblock %}
+
+<br>
+<br>
+<div class="container" >
+    <div class="row">
+        <div class="col-12 col-md-12 offset-md-1">
+            <div class="card col-10 pan-login">
+                <div class="card-body">
+                    <h2>Cambiar contraseña</h2>
+                    <hr>
+                    <form action="" method="post" onkeypress="return anular(event)">
+                        {% csrf_token %}
+                        <div class="form-row">
+                            <div class="form-group col-10 mb-0">
+                                {{ form.password1|as_crispy_field }}
+                            </div>
+                        </div>
+                        <br>
+                        <div class="form-row">
+                            <div class="form-group col-10 mb-0">
+                                {{ form.password2|as_crispy_field }}
+                            </div>
+                        </div>
+                        <br>
+                        <div>
+                            <input type="submit" value="Cambiar" class="btn btn-success" >
+                            <a href="{% url 'index' %}" class="btn btn-outline-dark">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+{% block bljs %}
+
+{% endblock %}
+{% endblock %}

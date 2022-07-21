@@ -32,7 +32,7 @@
                     <td style="text-align: left; margin-left: 45px; font-size: xx-large; width: 30%;">
                         U. H. Villas Azcapotzalco
                     </td>
-                    <td style="text-align: left; width: 45%;">
+                    <td style="text-align: left; width: 60%;">
                         <div >
                             <nav>
                                 <ul>
@@ -41,6 +41,7 @@
                                     <li><a class="menu" href="{% url 'consulta_deudas' %}"> Adeudos</a> </li>
                                     <li><a class="menu" href="{% url 'consulta_cobros' %}"> Cobros</a> </li>
                                     <li><a class="menu" href="{% url 'genera_recibos' %}"> Genera recibos</a> </li>
+                                    <li><a class="menu" href="{% url 'cambiar_contrasena' %}"> Cambiar contraseña</a> </li>
                                     <li><a class="menu" href="{% url 'logout'%}">Logout</a></li>
                                     <li><a class="menu" href="#" style="color:gold">Usuario : {{ user.username }}</a> </li>
                                     {% else %}

@@ -16,6 +16,7 @@ urlpatterns = [
     path('consulta_deudas/', consulta_deudas.as_view(), name='consulta_deudas'),
     path('consulta_cobros/', consulta_cobros.as_view(), name='consulta_cobros'),
     path('genera_recibos/', genera_recibos.as_view(), name='genera_recibos'),
+    path('cambiar_contrasena/', cambiar_contrasena.as_view(), name='cambiar_contrasena'), 
     
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

@@ -3,11 +3,18 @@ from datetime import date
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView
+from requests import post
+from core.forms import CambiaContrasenaForm
 from core.funciones import f_anio_mes_str, llena_mantenimiento 
 from .models import *
 from django.db.models.aggregates import Count
 from django.db.models import Sum
 from core.funciones import genera_cobros, llena_mantenimiento
+from django.db import transaction
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views import View
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 
 class index(ListView):
     model = Edificio
@@ -18,7 +25,7 @@ class index(ListView):
         context["servicios"] = Servicio.objects.all()
         return context
 
-class registro(ListView):
+class registro(LoginRequiredMixin, ListView):
     template_name = 'core/registro.html'
     def get_context_data(self, **kwargs):
         context = super(registro, self).get_context_data(**kwargs)
@@ -40,7 +47,7 @@ class registro(ListView):
         queryset = Matto.objects.filter(edificio=edificio, depto=depto, servicio=servicio).order_by('anio', 'mes')
         return queryset
 
-class pagar(ListView):
+class pagar(LoginRequiredMixin, ListView):
     template_name = 'core/pagar.html'
     def get_context_data(self, **kwargs):
         context = super(pagar, self).get_context_data(**kwargs)
@@ -77,6 +84,7 @@ class pagar(ListView):
         queryset = Matto.objects.filter(edificio=edificio, depto=depto, servicio=servicio).order_by('anio', 'mes')
         return queryset
 
+@login_required
 def guardaPagos(self):
     edificio = self.GET['edificio']
     depto = self.GET['depto']
@@ -87,39 +95,42 @@ def guardaPagos(self):
     importe = self.GET['importe']
     nomServicio = self.GET['nomServicio']
     nomServicio = self.GET['nomServicio']
-    usuarioId = self.GET['paso']
-    verifica = Matto.objects.filter(recibo=recibo)
-    if not verifica:
-        actualizaPago(pagos, edificio, depto, servicio, recibo, recibimosDe, importe, nomServicio, usuarioId)
+    usuarioId = self.user.id
+    nom_usuario = self.user.username
+#    verifica = Matto.objects.filter(recibo=recibo)
+#    if not verifica:
+    actualizaPago(pagos, edificio, depto, servicio, recibo, recibimosDe, importe, nomServicio, usuarioId, nom_usuario)
     return redirect('index')
 
-def actualizaPago(pagos, edificio, depto, servicio, recibo, recibimosDe, importe, nomServicio, usuarioId):
-    reciboFisico = Recibo(numero_recibo=recibo , edificio=edificio , depto=depto , 
-        recibimos_de=recibimosDe , importe=importe , concepto= nomServicio, usuario_id=usuarioId )
-    reciboFisico.save()
-    vuelta = 'anio'
-    indice = 0
-    ini = 0
-    fin = 0
-    for p in pagos:
-        if p == ':':
-            if vuelta == 'anio':
-                ini = indice + 3
-                fin = indice + 7
-                anio = pagos[ini:fin]
-                vuelta = 'mes'
-            else:
-                ini = indice + 3
-                fin = indice + 5
-                mes = pagos[ini:fin]
-                vuelta = 'anio'
-                characters = "'"
-                mes = ''.join( x for x in mes if x not in characters)
-                pago_act = Matto.objects.filter(edificio=edificio,depto=depto, servicio=servicio, anio=anio, mes=mes).  \
-                    update(recibo=recibo, reciboFisico=reciboFisico.id, estatus=1)
-        indice += 1
+@login_required
+def actualizaPago(pagos, edificio, depto, servicio, recibo, recibimosDe, importe, nomServicio, usuarioId, nom_usuario):
+    with transaction.atomic():
+        reciboFisico = Recibo(numero_recibo=recibo , edificio=edificio , depto=depto , nom_usuario=nom_usuario,
+            recibimos_de=recibimosDe , importe=importe , concepto= nomServicio, usuario_id=usuarioId )
+        reciboFisico.save()
+        vuelta = 'anio'
+        indice = 0
+        ini = 0
+        fin = 0
+        for p in pagos:
+            if p == ':':
+                if vuelta == 'anio':
+                    ini = indice + 3
+                    fin = indice + 7
+                    anio = pagos[ini:fin]
+                    vuelta = 'mes'
+                else:
+                    ini = indice + 3
+                    fin = indice + 5
+                    mes = pagos[ini:fin]
+                    vuelta = 'anio'
+                    characters = "'"
+                    mes = ''.join( x for x in mes if x not in characters)
+                    pago_act = Matto.objects.filter(edificio=edificio,depto=depto, servicio=servicio, anio=anio, mes=mes).  \
+                        update(recibo=recibo, reciboFisico=reciboFisico.id, estatus=1, usuario_id=usuarioId)
+            indice += 1
 
-class consulta_deudas(ListView):
+class consulta_deudas(LoginRequiredMixin, ListView):
     template_name = 'core/consulta_adeudos.html'
     def get_context_data(self, **kwargs):
         context = super(consulta_deudas, self).get_context_data(**kwargs)
@@ -176,7 +187,7 @@ class consulta_deudas(ListView):
         form = self.form_class(request.POST)
         return self.reverse_lazy(self.get_context_data(form=form))
 
-class consulta_cobros(ListView):
+class consulta_cobros(LoginRequiredMixin, ListView):
     template_name = 'core/consulta_cobros.html'
     def get_context_data(self, **kwargs):
         context = super(consulta_cobros, self).get_context_data(**kwargs)
@@ -227,8 +238,10 @@ class consulta_cobros(ListView):
             edificio = self.request.GET.get('edificio','0')
             depto = self.request.GET.get('depto','0')
             servicio = self.request.GET.get('servicio')
-            queryset = Recibo.objects.values('edificio','depto','concepto') \
-                .annotate(dcount=Count('edificio'),dimporte=Sum('importe')).order_by('edificio','depto','concepto')
+            queryset = Recibo.objects \
+                .values('edificio', 'depto', 'concepto', 'nom_usuario') \
+                .annotate(dcount=Count('edificio'),dimporte=Sum('importe')) \
+                .order_by('edificio', 'depto', 'concepto', 'nom_usuario')
             if edificio == None:
                 edificio = '00'
             if depto == None:
@@ -249,14 +262,17 @@ class consulta_cobros(ListView):
                 fechaDesde = Hoy
             if FechaHasta == "":
                 FechaHasta = Hoy
-            queryset = Recibo.objects.filter(fecha_pago__range=[fechaDesde, FechaHasta]).values('edificio','depto','concepto') \
-                .annotate(dcount=Count('edificio'),dimporte=Sum('importe')).order_by('edificio','depto','concepto') 
+            queryset = Recibo.objects \
+                .filter(fecha_pago__range=[fechaDesde, FechaHasta]) \
+                .values('edificio', 'depto', 'concepto', 'nom_usuario') \
+                .annotate(dcount=Count('edificio'),dimporte=Sum('importe')) \
+                .order_by('edificio', 'depto', 'concepto', 'nom_usuario') 
         return queryset
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
         return self.reverse_lazy(self.get_context_data(form=form))
 
-class genera_recibos(ListView):
+class genera_recibos(LoginRequiredMixin, ListView):
     template_name = 'core/genera_recibos.html'
     def get_context_data(self, **kwargs):
         context = super(genera_recibos, self).get_context_data(**kwargs)
@@ -269,5 +285,31 @@ class genera_recibos(ListView):
         queryset = Matto.objects.all()
         return queryset
     def post(self, request, *args, **kwargs):
-        llena_mantenimiento(self, request)
+#        llena_mantenimiento(self, request)
+        servicio = int(request.POST.get('servicio'))
+        anio = int(request.POST.get('anio'))
+        mes = int(request.POST.get('mes'))
+        genera_cobros(anio, mes, servicio)
         return redirect('genera_recibos')
+
+class cambiar_contrasena(LoginRequiredMixin, View):
+    template_name = 'core/cambiar_contrasena.html'
+    form_class = CambiaContrasenaForm
+    success_url = reverse_lazy("index")
+
+    def get(self, request, *args, **kwargs ):
+        return render(request, self.template_name, {'form': self.form_class})
+    
+    def post(self, request, *args, **kwargs ):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            user = Usuario.objects.filter(id=request.user.id)
+            if user.exists(): 
+                user = user.first()
+                user.set_password(form.cleaned_data.get('password1'))
+                user.save()
+                return redirect(self.success_url)
+            return redirect(self.success_url)
+        else:
+            form = self.form_class(request.POST)
+            return render(request, self.template_name, {'form': form})

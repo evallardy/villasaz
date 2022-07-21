@@ -62,7 +62,7 @@
             </td>
         </tr>
     </table>
-    <div class="container" style="width: 560px; height: 350px; overflow: auto; position: absolute;
+    <div class="container" style="width: 650px; height: 350px; overflow: auto; position: absolute;
          margin-top: 30px; margin-left: 20px; border-color: darkgray; border-style: solid; border-width: 1px;">
         <table style="width: 550px; max-height: 500px;">
             <thead>
@@ -71,7 +71,8 @@
                     <th style="text-align: center;">Departamento</th>
                     <th style="text-align: center;">Servicio</th>
                     <th style="text-align: center;">Recibos</th>
-                    <th style="text-align: center;">importe</th>
+                    <th style="text-align: center;">Importe</th>
+                    <th style="text-align: center;">Usuario</th>
                 </tr>
             </thead>
             <tbody>
@@ -82,6 +83,7 @@
                     <td style="text-align: left;">{{ p.concepto }}</td>
                     <td style="text-align: center;">{{ p.dcount }}</td>
                     <td style="text-align: center;">{{ p.dimporte }}</td>
+                    <td style="text-align: center;">{{ p.nom_usuario }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

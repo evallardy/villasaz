@@ -121,6 +121,7 @@ D_DEPTO = (
     ('403'),
     ('404'),
 )
+
 class Edificio(models.Model):
     numero = models.CharField("Edificio", max_length=2)
     coordenadas = models.CharField("Coordenadas", max_length=255)
@@ -150,7 +151,7 @@ class Usuario(AbstractUser):
         db_table = 'Usuario'
 
     def __str__(self):
-        return '%s %s' % (self.first_name, self.last_name)
+        return '%s' % (self.username)
 
     def _get_nombre_completo(self):
         return '%s %s %s' % (self.first_name, self.last_name, self.materno)
@@ -163,7 +164,8 @@ class Recibo(models.Model):
     recibimos_de = models.CharField("Departamento", max_length=90)
     importe = models.DecimalField("Importe", max_digits=9, decimal_places=2, default=0)
     concepto = models.CharField("Concepto", max_length=500)
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='usuario_recibo')
+    nom_usuario = models.CharField('Nombre usuario', max_length=20, null=True, blank=True)
     fecha_pago = models.DateField("FecahPago", auto_now_add=True, blank=True, null=True)
     created = models.DateTimeField("Creado", auto_now_add=True)
     modified = models.DateTimeField("Actualizado", auto_now=True)
@@ -176,6 +178,10 @@ class Recibo(models.Model):
 
     def __str__(self):
         return '%s-%s %s %s $ %s' % (self.edificio, self.depto, self.fecha_pago, self.concepto, self.importe)
+
+    def _get_nom_usuario(self):
+        return 'Hola'
+    nombre = property(_get_nom_usuario)
 
 class Servicio(models.Model):
     descripcion = models.CharField("Servicio", max_length=100)
@@ -202,7 +208,7 @@ class Matto(models.Model):
     hasta = models.CharField("Año - mes", max_length=6, default='000000') 
     recibo = models.CharField("Número de recibo", max_length=30, blank=True, null=True)
     reciboFisico = models.ForeignKey(Recibo, on_delete=models.CASCADE, blank=True, null=True)
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, blank=True, null=True)
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, blank=True, null=True, related_name='usuario_matto')
     created = models.DateTimeField("Creado", auto_now_add=True)
     modified = models.DateTimeField("Actualizado", auto_now=True)
     estatus = models.IntegerField("Estatus servicio", choices=ESTATUS_PAGO, default=0)
