@@ -269,5 +269,5 @@ class genera_recibos(ListView):
         queryset = Matto.objects.all()
         return queryset
     def post(self, request, *args, **kwargs):
-        llena_mantenimiento()
+        llena_mantenimiento(self, request)
         return redirect('genera_recibos')

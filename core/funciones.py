@@ -79,7 +79,7 @@ def llena_mantenimiento_historia(anio, mes):
                     if registros == 0:
                         genera_cobros(a, m, id_servicio)
 
-def llena_mantenimiento():
+def llena_mantenimiento(self, request):
     servicios = Servicio.objects.all()
     anios = np.arange(2018,2023,1,int) 
     meses = np.arange(1,13,1,int) 
