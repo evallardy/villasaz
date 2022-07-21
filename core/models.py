@@ -11,6 +11,15 @@ RESPONSABLE = (
     ('2', 'Tesorero'),
     ('3', 'Inquilino'),
 )
+ANIO = {
+    (2018),
+    (2019),
+    (2020),
+    (2021),
+    (2022),
+    (2023),
+    (2024),
+}
 MES = (
     (1, 'Enero'),
     (2, 'Febrero'),
@@ -24,6 +33,20 @@ MES = (
     (10, 'Octubre'),
     (11, 'Noviembre'),
     (12, 'Diciembre'),
+)
+MES_O = (
+    {'mes':1, 'nombre':'Enero'},
+    {'mes':2, 'nombre':'Febrero'},
+    {'mes':3, 'nombre':'Marzo'},
+    {'mes':4, 'nombre':'Abril'},
+    {'mes':5, 'nombre':'Mayo'},
+    {'mes':6, 'nombre':'Junio'},
+    {'mes':7, 'nombre':'Julio'},
+    {'mes':8, 'nombre':'Agosto'},
+    {'mes':9, 'nombre':'Septiembre'},
+    {'mes':10, 'nombre':'Octubre'},
+    {'mes':11, 'nombre':'Noviembre'},
+    {'mes':12, 'nombre':'Diciembre'},
 )
 EDIFICIO = (
     ('01', '01'),
@@ -152,7 +175,7 @@ class Recibo(models.Model):
         db_table = 'Recibo'
 
     def __str__(self):
-        return '%s-%s %s %s $ %s' % (self.edificio, self.depto, self.fecha, self.concepto, self.importe)
+        return '%s-%s %s %s $ %s' % (self.edificio, self.depto, self.fecha_pago, self.concepto, self.importe)
 
 class Servicio(models.Model):
     descripcion = models.CharField("Servicio", max_length=100)

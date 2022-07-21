@@ -1,14 +1,13 @@
-import sys
 import datetime
 from datetime import date
-from traceback import print_tb
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView, UpdateView
+from django.views.generic import ListView
 from core.funciones import f_anio_mes_str, llena_mantenimiento 
-from core.models import D_DEPTO, Edificio, Matto, Recibo, Servicio
+from .models import *
 from django.db.models.aggregates import Count
 from django.db.models import Sum
+from core.funciones import genera_cobros, llena_mantenimiento
 
 class index(ListView):
     model = Edificio
@@ -142,12 +141,24 @@ class consulta_deudas(ListView):
         context["servicio"] = servicio
         return context
     def get_queryset(self):
+        anio_act = datetime.datetime.today().year
+        mes_act = datetime.datetime.today().month
+        if mes_act == 1:
+            year -= 1
+            mes_act = 12
+        else:
+            mes_act -= 1
+        anio = str(anio_act)
+        mes = str(mes_act)
+        if mes_act < 10:
+            mes = "0" + mes
+        hasta = anio + mes
         edificio = self.request.GET.get('edificio','0')
         depto = self.request.GET.get('depto','0')
         servicio = self.request.GET.get('servicio','0')
         queryset = Matto.objects.values('edificio','depto','servicio') \
             .annotate(dcount=Count('edificio')).order_by('edificio','depto','servicio_id') \
-            .filter(estatus=0,hasta__lt=f_anio_mes_str())
+            .filter(estatus=0,hasta__lt=hasta)
         if edificio == None:
             edificio = '00'
         if depto == None:
@@ -244,3 +255,19 @@ class consulta_cobros(ListView):
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
         return self.reverse_lazy(self.get_context_data(form=form))
+
+class genera_recibos(ListView):
+    template_name = 'core/genera_recibos.html'
+    def get_context_data(self, **kwargs):
+        context = super(genera_recibos, self).get_context_data(**kwargs)
+        servicios = Servicio.objects.all()
+        context["servicios"] = servicios
+        context["anio"] = ANIO
+        context["mes"] = MES_O
+        return context
+    def get_queryset(self):
+        queryset = Matto.objects.all()
+        return queryset
+    def post(self, request, *args, **kwargs):
+        llena_mantenimiento()
+        return redirect('genera_recibos')
