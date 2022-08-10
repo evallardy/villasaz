@@ -228,6 +228,11 @@ class Matto(models.Model):
         return anio + mes
     anio_mes = property(_get_anio_mes)
 
+    def _get_anio_str(self):
+        anio_str = str(self.anio)
+        return anio_str
+    anio_str = property(_get_anio_str)
+
 class Contacto(models.Model):
     edificio = models.CharField("Edificio", max_length=2, choices=EDIFICIO)
     depto = models.CharField("Departamento", max_length=3, choices=DEPTO)
