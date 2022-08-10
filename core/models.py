@@ -179,10 +179,6 @@ class Recibo(models.Model):
     def __str__(self):
         return '%s-%s %s %s $ %s' % (self.edificio, self.depto, self.fecha_pago, self.concepto, self.importe)
 
-    def _get_nom_usuario(self):
-        return 'Hola'
-    nombre = property(_get_nom_usuario)
-
 class Servicio(models.Model):
     descripcion = models.CharField("Servicio", max_length=100)
     importe = models.DecimalField("importe", max_digits=9, decimal_places=2, default=0)

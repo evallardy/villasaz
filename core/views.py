@@ -94,20 +94,13 @@ def guardaPagos(self):
     recibimosDe = self.GET['recibimosDe']
     importe = self.GET['importe']
     nomServicio = self.GET['nomServicio']
-    nomServicio = self.GET['nomServicio']
     usuarioId = self.user.id
     nom_usuario = self.user.username
-#    verifica = Matto.objects.filter(recibo=recibo)
-#    if not verifica:
-    actualizaPago(pagos, edificio, depto, servicio, recibo, recibimosDe, importe, nomServicio, usuarioId, nom_usuario)
-    return redirect('index')
-
-@login_required
-def actualizaPago(pagos, edificio, depto, servicio, recibo, recibimosDe, importe, nomServicio, usuarioId, nom_usuario):
     with transaction.atomic():
-        reciboFisico = Recibo(numero_recibo=recibo , edificio=edificio , depto=depto , nom_usuario=nom_usuario,
+        reciboFisico = Recibo(numero_recibo=recibo , edificio=edificio , depto=depto , nom_usuario=nom_usuario, \
             recibimos_de=recibimosDe , importe=importe , concepto= nomServicio, usuario_id=usuarioId )
         reciboFisico.save()
+        numero_recibo = reciboFisico.id
         vuelta = 'anio'
         indice = 0
         ini = 0
@@ -126,9 +119,10 @@ def actualizaPago(pagos, edificio, depto, servicio, recibo, recibimosDe, importe
                     vuelta = 'anio'
                     characters = "'"
                     mes = ''.join( x for x in mes if x not in characters)
-                    pago_act = Matto.objects.filter(edificio=edificio,depto=depto, servicio=servicio, anio=anio, mes=mes).  \
-                        update(recibo=recibo, reciboFisico=reciboFisico.id, estatus=1, usuario_id=usuarioId)
+                    pago_act = Matto.objects.filter(edificio=edificio,depto=depto, servicio=servicio, anio=anio, mes=mes). \
+                        update(recibo=recibo, reciboFisico=numero_recibo, estatus=1, usuario_id=usuarioId)
             indice += 1
+    return redirect('index')
 
 class consulta_deudas(LoginRequiredMixin, ListView):
     template_name = 'core/consulta_adeudos.html'

@@ -1,5 +1,9 @@
 from pathlib import Path
 
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_AGE = 900
+SESSION_SAVE_EVERY_REQUEST = True
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -13,7 +17,7 @@ SECRET_KEY = 'django-insecure-(n_l8s1@k&nw2+g=wx2sdez%law*5qaa6x^t#4c!)e9g^k%wz1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["pleyatec.iagmexico.com"]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -37,7 +41,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'pleyatec.urls'
+ROOT_URLCONF = 'adminis.urls'
 
 TEMPLATES = [
     {
@@ -55,7 +59,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'pleyatec.wsgi.application'
+WSGI_APPLICATION = 'adminis.wsgi.application'
 
 
 # Database
@@ -64,9 +68,9 @@ WSGI_APPLICATION = 'pleyatec.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'pleyatec1',
-        'USER': 'pleyatec_admin',
-        'PASSWORD': '9%5z3p3uQ',
+        'NAME': 'adminis',
+        'USER': 'root',
+        'PASSWORD': 'root',
         'HOST': 'localhost',
         'PORT': '',
     }
